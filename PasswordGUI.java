@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -17,6 +16,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.text.NumberFormatter;
 
@@ -24,12 +25,7 @@ public class PasswordGUI extends JFrame{
     
     private JFrame frame;
  
-    private JLabel lblEnterMaximumCharacters;
     private openWriter FW;
-    private JCheckBox chckbxCapitals;
-    private JCheckBox chckbxAddNumber;
-    private JCheckBox chckbxAddSpecial;
-    private JLabel lblOr;
     private JLabel lblNumberOfCapital;
     private JLabel lblNumberOfSpecial;
     private JSpinner SpecialsSpinner;
@@ -37,7 +33,6 @@ public class PasswordGUI extends JFrame{
     private JSpinner CapitalsSpinner;
     private GeneratorLogic GL;
     private JSpinner NumbersSpinner;
-    private JLabel lblEnterMinimumCharacters;
     private JButton btnGenerate;
     private JMenuItem newItem;
     private JMenuItem openItem;
@@ -52,7 +47,7 @@ public class PasswordGUI extends JFrame{
         super("Password Generator");
         GL=generatorLogic;
         FW=new openWriter();
-        setSize(450, 325);
+        setSize(450, 290);
         setResizable(false);
         this.setLocationRelativeTo(null);
         frame=new JFrame();
@@ -94,111 +89,83 @@ public class PasswordGUI extends JFrame{
     }
     
     public void NewScreen() {
+    	saveItem.setEnabled(false);
         getContentPane().removeAll();
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
-        setSize(450, 325);
+        setSize(450, 290);
         setLayout(null);
         
-        lblEnterMinimumCharacters = new JLabel("Enter Minimum Characters");
-        lblEnterMinimumCharacters.setBounds(35, 11, 207, 14);
-        add(lblEnterMinimumCharacters);
+        JLabel lblEnterNumberOf = new JLabel("Enter Number of Characters");
+        lblEnterNumberOf.setBounds(135, 18, 163, 57);
+		add(lblEnterNumberOf);
+
         
-        JFormattedTextField MinField =new JFormattedTextField(numFormatter());
-        MinField.setBounds(0, 31, 217, 20);
-        add(MinField);
-        MinField.setColumns(10);
+        JFormattedTextField NumField =new JFormattedTextField(numFormatter());
+       NumField.setBounds(145, 55, 144, 20);
+        add(NumField);
+        NumField.setColumns(10);
+      
         
-        lblEnterMaximumCharacters = new JLabel("Enter Maximum Characters");
-        lblEnterMaximumCharacters.setBounds(252, 11, 165, 14);
-        add(lblEnterMaximumCharacters);
+     
         
-        JFormattedTextField MaxField =new JFormattedTextField(numFormatter());
-        MaxField.setBounds(217, 31, 227, 20);
-        add(MaxField);        
-        MaxField.setColumns(10);
-        
-        chckbxCapitals = new JCheckBox("Add 1 Capital Letter");
-        chckbxCapitals.setBounds(0, 88, 150, 23);
-        chckbxCapitals.addActionListener(new ActionListener(){
-        	public void actionPerformed(ActionEvent e){
-        		if(chckbxCapitals.isSelected()){
-        			
-        		}
-        	}
-        });
-        add(chckbxCapitals);
-        
-        chckbxAddNumber = new JCheckBox("Add 1 Number");
-        chckbxAddNumber.setBounds(323, 88, 111, 23);
-        add(chckbxAddNumber);
-        
-        chckbxAddSpecial = new JCheckBox("Add 1 Special Character");
-        chckbxAddSpecial.setBounds(150, 88, 165, 23);
-        add(chckbxAddSpecial);
-        
-        lblOr = new JLabel("OR");
-        lblOr.setBounds(210, 129, 46, 14);
-        add(lblOr);
-        
-        lblNumberOfCapital = new JLabel("# of Capital Letters");
-        lblNumberOfCapital.setBounds(10, 178, 123, 14);
+        lblNumberOfCapital = new JLabel("# of Capital Letters",SwingConstants.CENTER);
+        lblNumberOfCapital.setBounds(1, 97, 144, 46);
         add(lblNumberOfCapital);
         
-        CapitalsSpinner = new JSpinner();
-        CapitalsSpinner.setBounds(51, 194, 29, 20);
+        SpinnerModel smCaps=new SpinnerNumberModel(0,0,100,1);
+        CapitalsSpinner = new JSpinner(smCaps);      
+        CapitalsSpinner.setBounds(58, 138, 40, 20);
         add(CapitalsSpinner);
         
         lblNumberOfSpecial = new JLabel("# of Special Characters");
-        lblNumberOfSpecial.setBounds(154, 178, 150, 14);
+        lblNumberOfSpecial.setBounds(154, 97, 144, 46);
         add(lblNumberOfSpecial);
         
-        SpecialsSpinner = new JSpinner();
-        SpecialsSpinner.setBounds(210, 194, 29, 20);
+        SpinnerModel smSpec=new SpinnerNumberModel(0,0,100,1);
+        SpecialsSpinner = new JSpinner(smSpec);
+        SpecialsSpinner.setBounds(195, 138, 40, 20);
         add(SpecialsSpinner);
         
         lblOfNumbers = new JLabel("# of Numbers");
-        lblOfNumbers.setBounds(340, 178, 85, 14);
+        lblOfNumbers.setBounds(320, 97, 144, 46);
         add(lblOfNumbers);
         
-        NumbersSpinner = new JSpinner();
-        NumbersSpinner.setBounds(359, 194, 29, 20);
+        SpinnerModel smNum=new SpinnerNumberModel(0,0,100,1);
+        NumbersSpinner = new JSpinner(smNum);
+        NumbersSpinner.setBounds(340, 138, 40, 20);
         add(NumbersSpinner);
         
         btnGenerate = new JButton("Generate");
         btnGenerate.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                if(MinField.getText().trim().isEmpty()||MaxField.getText().trim().isEmpty()){
-                    JOptionPane.showMessageDialog(null, "Min Characters or Max Characters field was left empty.");
-                    GL.Reset();
+                if(NumField.getText().trim().isEmpty()){
+                    JOptionPane.showMessageDialog(null, "Number of characters for Password field was left empty.");
+                   
                     NewScreen();
                 }
-                else{
-                    GL.setMinChars(Integer.valueOf(MinField.getText()));
-                    GL.setMaxChars(Integer.valueOf(MaxField.getText()));
+                else if(Integer.valueOf(NumField.getText())<0||Integer.valueOf(NumField.getText())>100){
+                		JOptionPane.showMessageDialog(null,"Error, password length must be between 1 and 100");
+                		NewScreen();
+                	
                 }
-                if((chckbxCapitals.isSelected()||chckbxAddNumber.isSelected()||chckbxAddSpecial.isSelected())&&
-                		((Integer)SpecialsSpinner.getValue()!=0||(Integer)NumbersSpinner.getValue()!=0||(Integer)CapitalsSpinner.getValue()!=0)){
-                	JOptionPane.showMessageDialog(null, "Invalid selection, Check box and Counter were both used.");
-                	GL.Reset();
+                else if(Integer.valueOf(NumField.getText()) < ( (Integer)CapitalsSpinner.getValue() + (Integer)NumbersSpinner.getValue() + (Integer)SpecialsSpinner.getValue() )){
+                	JOptionPane.showMessageDialog(null, "Error, Number of characters for password less than amount of Numbers, Specials and Capitals requested in password");
                 	NewScreen();
                 }
-                else if((chckbxCapitals.isSelected()||chckbxAddNumber.isSelected()||chckbxAddSpecial.isSelected())){
-                	if(chckbxCapitals.isSelected()){ GL.setCapitalChars(1);}
-                	if(chckbxAddNumber.isSelected()){GL.setNumbers(1);}
-                	if(chckbxAddSpecial.isSelected()){GL.setSpecialChars(1);}
-                }
-                else if((Integer)SpecialsSpinner.getValue()!=0||(Integer)NumbersSpinner.getValue()!=0||(Integer)CapitalsSpinner.getValue()!=0){
-        	GL.setCapitalChars((Integer)SpecialsSpinner.getValue());
+                else{
+                	GL.setNumChars(Integer.valueOf(NumField.getText()));
+        	GL.setCapitalChars((Integer)CapitalsSpinner.getValue());
         	GL.setNumbers((Integer)NumbersSpinner.getValue());
         	GL.setSpecialChars((Integer)SpecialsSpinner.getValue());
-        }
-                
+        
+        GL.Generate();
                 generatedPasswordScreen();
+                }
             }
 
 			});
-            btnGenerate.setBounds(0, 238, 450, 23);
+            btnGenerate.setBounds(1, 191, 443, 34);
             add(btnGenerate);
             
             setVisible(true);
@@ -250,6 +217,12 @@ public class PasswordGUI extends JFrame{
 		JLabel label_6=new JLabel("");
 		add(label_6);
 		
+		JLabel lblDAD=new JLabel("Can also drag and drop a .pwg file to automatically copy the generated password",SwingConstants.CENTER);
+		add (lblDAD);
+		
+		JLabel lblDADC=new JLabel("to the clipboard",SwingConstants.CENTER);
+		add (lblDADC);
+		
 		JButton btnBackToPassword = new JButton("Back to Password Generator");
 		btnBackToPassword.addActionListener(e->{NewScreen();});
 		add(btnBackToPassword);
@@ -286,7 +259,7 @@ public class PasswordGUI extends JFrame{
 		lblYourGeneratedPassword.setBounds(0, 0, 434, 95);
 		add(lblYourGeneratedPassword);
 		
-		PWField = new JTextField(GL.Generate());
+		PWField = new JTextField(GL.getPassword());
 		PWField.setHorizontalAlignment(JTextField.CENTER);
 		PWField.setBounds(0, 95, 434, 39);
 		PWField.setEditable(false);
@@ -300,6 +273,7 @@ public class PasswordGUI extends JFrame{
             	StringSelection stringSelection = new StringSelection(GL.Password);
             	Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
             	clpbrd.setContents(stringSelection, null);
+            	JOptionPane.showMessageDialog(null, "Copied to Clipboard");
             }});
 		add(ClipBoardButton);
 
@@ -310,12 +284,39 @@ public class PasswordGUI extends JFrame{
 
 
 	}
-	public void enableSaveItem(){
-		saveItem.setEnabled(true);
+	public void changeSaveItem(boolean setting){
+		saveItem.setEnabled(setting);
 	}
 
 	public void openedFile() {
-		// TODO Auto-generated method stub
+		getContentPane().removeAll();
+		setResizable(false);
+        setSize(450, 325);     
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		getContentPane().setLayout(null);
+		
+		lblYourGeneratedPassword = new JLabel("Your generated password:",SwingConstants.CENTER);
+		lblYourGeneratedPassword.setBounds(0, 0, 434, 95);
+		add(lblYourGeneratedPassword);
+		
+		PWField = new JTextField(GL.Password);
+		PWField.setHorizontalAlignment(JTextField.CENTER);
+		PWField.setBounds(0, 95, 434, 39);
+		PWField.setEditable(false);
+		add(PWField);
+		PWField .setColumns(10);
+		
+		ClipBoardButton = new JButton("Copy to Clipboard");
+		ClipBoardButton.setBounds(150, 166, 150, 23);
+		ClipBoardButton.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+            	StringSelection stringSelection = new StringSelection(GL.Password);
+            	Clipboard clpbrd = Toolkit.getDefaultToolkit().getSystemClipboard();
+            	clpbrd.setContents(stringSelection, null);
+            	JOptionPane.showMessageDialog(null, "Copied to Clipboard");
+            }});
+		add(ClipBoardButton);
+		changeSaveItem(false);
 		
 	}
 }
